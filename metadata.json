@@ -1,0 +1,6 @@
+{
+  "name": "HTML to MP4",
+  "description": "Mobile-first HTML animation to MP4 converter with deterministic virtual clock, WebAudio offline replay, WebCodecs H.264/AAC encoding, and real-time fallback.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>HTML to MP4</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <!-- Top Support / Status Banner -->
+    <section id="supportBanner" class="card banner-card" aria-live="polite">
+      <div class="banner-header">
+        <span class="status-dot" id="supportDot"></span>
+        <strong id="supportTitle">Browser &amp; Codec Support</strong>
+        <button type="button" id="langBtn" class="chip-btn" aria-label="Toggle language">বাংলা / EN</button>
+      </div>
+      <p id="supportMessage" class="muted-text"></p>
+      <div id="capabilityPills" class="pill-row"></div>
+    </section>
+
+    <!-- Bilingual Friendly Error / Warning Alert -->
+    <section id="alertBox" class="card alert-card hidden" role="alert">
+      <p id="alertText"></p>
+    </section>
+
+    <div class="studio-grid">
+      <!-- Left / Top Column: Source + Stage + Settings -->
+      <div class="col-stack">
+        <!-- Upload & Samples Card -->
+        <section class="card">
+          <div class="section-head">
+            <h2 id="uploadTitle">Drop or Choose HTML File</h2>
+            <span id="loadedFileBadge" class="mono-badge hidden"></span>
+          </div>
+          <p id="uploadHint" class="muted-text">Self-contained .html animation (Canvas, CSS, SVG, WebAudio)</p>
+
+          <div id="dropZone" class="drop-zone" tabindex="0">
+            <input type="file" id="fileInput" accept=".html,.htm,text/html" class="visually-hidden" />
+            <button type="button" id="pickFileBtn" class="btn btn-primary">Choose .html File</button>
+          </div>
+
+          <div class="samples-wrap">
+            <span id="samplesLabel" class="field-label">Quick Samples</span>
+            <div class="sample-row">
+              <button type="button" class="btn btn-ghost sample-btn" data-sample="canvas" id="sampleCanvasBtn">Neon Orbit + Synth</button>
+              <button type="button" class="btn btn-ghost sample-btn" data-sample="css" id="sampleCssBtn">Kinetic CSS Card</button>
+              <button type="button" class="btn btn-ghost sample-btn" data-sample="svg" id="sampleSvgBtn">Mandala SVG + Chime</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Live Stage Card -->
+        <section class="card">
+          <div class="section-head">
+            <h2 id="stagePreviewTitle">Live Stage</h2>
+            <span id="stageStatusChip" class="mono-badge">Ready</span>
+          </div>
+          <div id="stageWrapper" class="stage-wrapper ratio-16-9">
+            <div id="stageEmpty" class="stage-empty">
+              <p id="noFileLoadedText">Load an .html file or pick a sample above to preview and convert.</p>
+            </div>
+            <iframe
+              id="stageFrame"
+              title="HTML Animation Stage"
+              sandbox="allow-scripts allow-same-origin"
+              class="stage-frame hidden">
+            </iframe>
+          </div>
+        </section>
+      </div>
+
+      <!-- Right / Bottom Column: Settings + Actions + Progress + Preview -->
+      <div class="col-stack">
+        <section class="card">
+          <div class="section-head">
+            <h2 id="settingsTitle">Export Settings</h2>
+          </div>
+
+          <div class="settings-grid">
+            <!-- Resolution -->
+            <div class="field-group">
+              <label class="field-label" id="resolutionLabel">Resolution</label>
+              <div class="segmented" role="group" aria-label="Resolution">
+                <button type="button" class="seg-btn active" data-res="720p">720p</button>
+                <button type="button" class="seg-btn" data-res="1080p">1080p</button>
+              </div>
+            </div>
+
+            <!-- Aspect -->
+            <div class="field-group">
+              <label class="field-label" id="aspectLabel">Aspect</label>
+              <div class="segmented" role="group" aria-label="Aspect Ratio">
+                <button type="button" class="seg-btn active" data-aspect="16:9">16:9</button>
+                <button type="button" class="seg-btn" data-aspect="9:16">9:16</button>
+                <button type="button" class="seg-btn" data-aspect="1:1">1:1</button>
+              </div>
+            </div>
+
+            <!-- FPS -->
+            <div class="field-group">
+              <label class="field-label" id="fpsLabel">Frame Rate</label>
+              <div class="segmented" role="group" aria-label="Frame Rate">
+                <button type="button" class="seg-btn" data-fps="24">24</button>
+                <button type="button" class="seg-btn active" data-fps="30">30</button>
+                <button type="button" class="seg-btn" data-fps="60">60</button>
+              </div>
+            </div>
+
+            <!-- Duration -->
+            <div class="field-group">
+              <label class="field-label" for="durationInput" id="durationLabel">Duration (seconds)</label>
+              <div class="duration-row">
+                <input
+                  type="number"
+                  id="durationInput"
+                  min="0.5"
+                  max="300"
+                  step="0.5"
+                  value="5.0"
+                  class="num-input"
+                />
+                <button type="button" id="detectBtn" class="btn btn-secondary">Auto-Detect</button>
+              </div>
+              <p id="durationSourceText" class="muted-text small-note"></p>
+            </div>
+          </div>
+
+          <!-- Render Mode -->
+          <div class="mode-row">
+            <button type="button" id="modeFastBtn" class="seg-btn active">Virtual Clock (Fast)</button>
+            <button type="button" id="modeRealtimeBtn" class="seg-btn">Real-Time Record (Fallback)</button>
+          </div>
+
+          <!-- Primary Action Buttons -->
+          <div class="action-row">
+            <button type="button" id="convertBtn" class="btn btn-primary btn-lg" disabled>Convert to MP4</button>
+            <button type="button" id="stopBtn" class="btn btn-danger btn-lg hidden">Stop Recording</button>
+            <button type="button" id="cancelBtn" class="btn btn-ghost hidden">Cancel</button>
+          </div>
+
+          <!-- Progress & ETA -->
+          <div id="progressBox" class="progress-box hidden">
+            <div class="progress-top">
+              <span id="phaseText">Initializing...</span>
+              <span id="percentText" class="mono-badge">0%</span>
+            </div>
+            <div class="progress-track">
+              <div id="progressFill" class="progress-fill" style="width: 0%"></div>
+            </div>
+            <div class="telemetry-row">
+              <span id="frameStat">Frame: 0/0</span>
+              <span id="speedStat">Speed: --x</span>
+              <span id="etaStat">ETA: --</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Output Preview & Download Card -->
+        <section id="outputCard" class="card hidden">
+          <div class="section-head">
+            <h2 id="previewTitle">MP4 Preview &amp; Export</h2>
+            <span id="outputMetaBadge" class="mono-badge"></span>
+          </div>
+          <video id="outputVideo" class="output-video" controls playsinline></video>
+          <p id="outputEngineText" class="muted-text small-note"></p>
+          <div class="action-row">
+            <a id="downloadLink" class="btn btn-primary btn-lg" download="animation.mp4">Download MP4</a>
+            <button type="button" id="shareAndroidBtn" class="btn btn-secondary hidden">Share MP4</button>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

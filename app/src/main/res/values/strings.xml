@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">HTML to MP4</string>
+    <string name="action_open_html">Open HTML</string>
+    <string name="action_samples">Samples</string>
+    <string name="action_diagnostics">Browser Check</string>
+    <string name="action_exports">Exports</string>
+    <string name="action_share">Share MP4</string>
+    <string name="action_save_downloads">Save to Downloads</string>
+    <string name="language_toggle_desc">Switch language between English and Bengali</string>
+</resources>
